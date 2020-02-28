@@ -12,9 +12,9 @@ class ReviewController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Product $product)
     {
-        //
+        return ReviewResource::collection($product->reviews);
     }
 
     /**
@@ -33,9 +33,14 @@ class ReviewController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Review $review, Product $product, Request $request)
     {
-        //
+        $review = new Review($request->all());
+        $product->reviews()->save($review);
+
+        return response([
+            'data' => new ReviewResource($review),
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -67,9 +72,9 @@ class ReviewController extends Controller
      * @param  \App\Review  $review
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Review $review)
+    public function update(Review $review, Product $product, Request $request)
     {
-        //
+        $request->update($request->all());
     }
 
     /**
@@ -78,8 +83,10 @@ class ReviewController extends Controller
      * @param  \App\Review  $review
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Review $review)
+    public function destroy(Review $review, Product $product)
     {
-        //
+        $review->delete();
+
+        return response(null, HTTP_NO_CONTENT);
     }
 }
